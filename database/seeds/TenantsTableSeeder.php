@@ -15,7 +15,6 @@ class TenantsTableSeeder extends Seeder
      */
     public function run()
     {
-
         $plan = Plan::first();
 
         $plan->tenants()->create([
