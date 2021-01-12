@@ -32,10 +32,11 @@
             {{-- Card Header --}}
             @hasSection('auth_header')
                 <div class="card-header {{ config('adminlte.classes_auth_header', '') }}">
-                    <h3 class="card-title float-none text-center">
+                    <br><h3 class="card-title float-none text-center">
                         @yield('auth_header')
-                    </h3>
-                </div>
+                        <p><strong>Plano:</strong> {{ session('plan')->name ?? '-'}}</p>                           
+                    </h3>                                     
+                </div>                
             @endif
 
             {{-- Card Body --}}
