@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use App\Services\TenantService;
+use App\Tenant\Events\TenantCreated;
 use App\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
@@ -74,6 +75,8 @@ class RegisterController extends Controller
         $tenatService = app(TenantService::class);
 
         $user = $tenatService->make($plan, $data);
+
+        event(new TenantCreated($user));
 
         return $user;
 
