@@ -26,7 +26,8 @@ class TenantFormRequest extends FormRequest
         return [
             'token_company' => [
                 'required',
-                'exists:tenants,uuid']
+                'exists:tenants,uuid'
+            ]
         ];
     }
 }
