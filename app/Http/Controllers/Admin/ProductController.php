@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
-
     private $repository;
 
     public function __construct(Product $product)
@@ -19,7 +18,6 @@ class ProductController extends Controller
 
         $this->middleware(['can:products']);
     }
-
 
     /**
      * Display a listing of the resource.
@@ -46,7 +44,7 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\StoreUpdateProduct;  $request
+     * @param  \App\Http\Requests\StoreUpdateProduct  $request
      * @return \Illuminate\Http\Response
      */
     public function store(StoreUpdateProduct $request)
@@ -55,10 +53,10 @@ class ProductController extends Controller
 
         $tenant = auth()->user()->tenant;
 
-        if($request->hasFile('image') && $request->image->isValid()){
-            $data['image'] = $request->image->store("tenants/{$tenant->uuid}/products"); 
+        if ($request->hasFile('image') && $request->image->isValid()) {
+            $data['image'] = $request->image->store("tenants/{$tenant->uuid}/products");
         }
-        
+
         $this->repository->create($data);
 
         return redirect()->route('products.index');
@@ -72,9 +70,10 @@ class ProductController extends Controller
      */
     public function show($id)
     {
-        if(!$product = $this->repository->find($id)){
+        if (!$product = $this->repository->find($id)) {
             return redirect()->back();
         }
+
         return view('admin.pages.products.show', compact('product'));
     }
 
@@ -86,24 +85,25 @@ class ProductController extends Controller
      */
     public function edit($id)
     {
-        if(!$product = $this->repository->find($id)){
+        if (!$product = $this->repository->find($id)) {
             return redirect()->back();
         }
 
         return view('admin.pages.products.edit', compact('product'));
     }
 
-  /**
-     * Update register by id.
+
+    /**
+     * Update register by id
      *
-     * @param  \App\Http\Requests\StoreUpdateProduct;  $request
-     * @param int id
+     * @param  \App\Http\Requests\StoreUpdateProduct  $request
+     * @param  int  $id
+     *
      * @return \Illuminate\Http\Response
      */
     public function update(StoreUpdateProduct $request, $id)
     {
-
-        if(!$product = $this->repository->find($id)){
+        if (!$product = $this->repository->find($id)) {
             return redirect()->back();
         }
 
@@ -111,20 +111,18 @@ class ProductController extends Controller
 
         $tenant = auth()->user()->tenant;
 
-        if($request->hasFile('image') && $request->image->isValid()){
-            
-            if (Storage::exists($product->image)){
+        if ($request->hasFile('image') && $request->image->isValid()) {
+
+            if (Storage::exists($product->image)) {
                 Storage::delete($product->image);
             }
 
             $data['image'] = $request->image->store("tenants/{$tenant->uuid}/products");
-
         }
 
         $product->update($data);
 
         return redirect()->route('products.index');
-
     }
 
     /**
@@ -135,11 +133,11 @@ class ProductController extends Controller
      */
     public function destroy($id)
     {
-        if(!$product = $this->repository->find($id)){
+        if (!$product = $this->repository->find($id)) {
             return redirect()->back();
         }
 
-        if (Storage::exists($product->image)){
+        if (Storage::exists($product->image)) {
             Storage::delete($product->image);
         }
 
@@ -149,28 +147,26 @@ class ProductController extends Controller
     }
 
 
-/**
-     * Search results.
+    /**
+     * Search results
      *
      * @param  Request $request
      * @return \Illuminate\Http\Response
      */
     public function search(Request $request)
     {
-
         $filters = $request->only('filter');
 
         $products = $this->repository
-                            ->where(function($query) use ($request){
-                                if ($request->filter){
+                            ->where(function($query) use ($request) {
+                                if ($request->filter) {
                                     $query->orWhere('description', 'LIKE', "%{$request->filter}%");
                                     $query->orWhere('title', $request->filter);
                                 }
-                            })       
-                            ->latest()             
+                            })
+                            ->latest()
                             ->paginate();
 
         return view('admin.pages.products.index', compact('products', 'filters'));
     }
-
 }
